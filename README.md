@@ -7,31 +7,33 @@
 На текущем этапе реализованы функции для:
 
 - фильтрации банковских операций по статусу;
-- сортировки банковских операций по дате.
+- сортировки банковских операций по дате;
+- маскировки номеров банковских карт и счетов;
+- преобразования даты банковской операции в формат `ДД.ММ.ГГГГ`.
 
 ## Установка
 
 1. Клонируйте репозиторий:
 
-~~~bash
+```bash
 git clone git@github.com:Exichek/Domashka_10.1.git
-~~~
+```
 
 2. Перейдите в директорию проекта:
 
-~~~bash
+```bash
 cd Domashka_10.1
-~~~
+```
 
 3. Установите зависимости с помощью Poetry:
 
-~~~bash
+```bash
 poetry install
-~~~
+```
 
 ## Использование
 
-Функции для обработки банковских операций находятся в модуле `src.processing`.
+Функции для обработки банковских операций находятся в модулях `src.processing`, `src.masks` и `src.widget`.
 
 ### Фильтрация операций по статусу
 
@@ -41,7 +43,7 @@ poetry install
 
 Пример:
 
-~~~python
+```python
 from src.processing import filter_by_state
 
 operations = [
@@ -52,22 +54,22 @@ operations = [
 
 result = filter_by_state(operations)
 print(result)
-~~~
+```
 
 Результат:
 
-~~~python
+```python
 [
     {"id": 1, "state": "EXECUTED"},
     {"id": 3, "state": "EXECUTED"},
 ]
-~~~
+```
 
 Для фильтрации по другому статусу его можно передать вторым аргументом:
 
-~~~python
+```python
 result = filter_by_state(operations, "CANCELED")
-~~~
+```
 
 ### Сортировка операций по дате
 
@@ -77,7 +79,7 @@ result = filter_by_state(operations, "CANCELED")
 
 Пример:
 
-~~~python
+```python
 from src.processing import sort_by_date
 
 operations = [
@@ -88,13 +90,53 @@ operations = [
 
 result = sort_by_date(operations)
 print(result)
-~~~
+```
 
 Для сортировки по возрастанию передайте `False` вторым аргументом:
 
-~~~python
+```python
 result = sort_by_date(operations, False)
-~~~
+```
+
+## Тестирование
+
+Для тестирования проекта используется библиотека `pytest`.
+
+Тесты находятся в директории `tests` и разделены по модулям проекта:
+
+- `test_masks.py` — тесты функций маскировки номеров карт и счетов;
+- `test_widget.py` — тесты функций модуля `widget`;
+- `test_processing.py` — тесты функций фильтрации и сортировки банковских операций.
+
+В тестах используются фикстуры `pytest` для подготовки тестовых данных и параметризация для проверки функций на различных наборах входных данных.
+
+Для запуска всех тестов выполните:
+
+```bash
+poetry run pytest
+```
+
+Для проверки покрытия кода тестами выполните:
+
+```bash
+poetry run pytest --cov=src
+```
+
+Для создания HTML-отчета о покрытии выполните:
+
+```bash
+poetry run pytest --cov=src --cov-report=html
+```
+
+После выполнения команды HTML-отчет будет создан в директории `htmlcov`.
+
+Открыть отчет можно через файл:
+
+```text
+htmlcov/index.html
+```
+
+Текущее покрытие функционального кода тестами составляет 100%.
 
 ## Проверка качества кода
 
@@ -102,18 +144,18 @@ result = sort_by_date(operations, False)
 
 Запуск Flake8:
 
-~~~bash
-poetry run flake8 src
-~~~
+```bash
+poetry run flake8 src tests
+```
 
 Запуск mypy:
 
-~~~bash
-poetry run mypy src
-~~~
+```bash
+poetry run mypy src tests
+```
 
 Проверка isort:
 
-~~~bash
-poetry run isort --check-only src
-~~~
+```bash
+poetry run isort --check-only src tests
+```
