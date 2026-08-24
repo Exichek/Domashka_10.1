@@ -9,7 +9,10 @@
 - фильтрации банковских операций по статусу;
 - сортировки банковских операций по дате;
 - маскировки номеров банковских карт и счетов;
-- преобразования даты банковской операции в формат `ДД.ММ.ГГГГ`.
+- преобразования даты банковской операции в формат `ДД.ММ.ГГГГ`;
+- фильтрации транзакций по валюте;
+- получения описаний транзакций с помощью генератора;
+- генерации номеров банковских карт в заданном диапазоне.
 
 ## Установка
 
@@ -33,7 +36,7 @@ poetry install
 
 ## Использование
 
-Функции для обработки банковских операций находятся в модулях `src.processing`, `src.masks` и `src.widget`.
+Функции для обработки банковских операций находятся в модулях `src.processing`, `src.masks`, `src.widget` и `src.generators`.
 
 ### Фильтрация операций по статусу
 
@@ -98,6 +101,85 @@ print(result)
 result = sort_by_date(operations, False)
 ```
 
+## Генераторы
+
+Для работы с транзакциями с использованием генераторов и итераторов создан модуль `src.generators`.
+
+В модуле реализованы функции:
+
+- `filter_by_currency`;
+- `transaction_descriptions`;
+- `card_number_generator`.
+
+### Фильтрация транзакций по валюте
+
+Функция `filter_by_currency` принимает список транзакций и код валюты и возвращает итератор с транзакциями, соответствующими указанной валюте.
+
+Пример:
+
+```python
+from src.generators import filter_by_currency
+
+usd_transactions = filter_by_currency(transactions, "USD")
+
+for transaction in usd_transactions:
+    print(transaction)
+```
+
+Также значения из итератора можно получать по одному с помощью `next`:
+
+```python
+usd_transactions = filter_by_currency(transactions, "USD")
+
+print(next(usd_transactions))
+```
+
+### Получение описаний транзакций
+
+Функция-генератор `transaction_descriptions` принимает список транзакций и последовательно возвращает описание каждой операции.
+
+Пример:
+
+```python
+from src.generators import transaction_descriptions
+
+descriptions = transaction_descriptions(transactions)
+
+for description in descriptions:
+    print(description)
+```
+
+Пример результата:
+
+```text
+Перевод организации
+Перевод со счета на счет
+Перевод с карты на карту
+```
+
+### Генерация номеров банковских карт
+
+Функция-генератор `card_number_generator` принимает начальное и конечное значения диапазона и генерирует номера банковских карт в формате `XXXX XXXX XXXX XXXX`.
+
+Пример:
+
+```python
+from src.generators import card_number_generator
+
+for card_number in card_number_generator(1, 5):
+    print(card_number)
+```
+
+Результат:
+
+```text
+0000 0000 0000 0001
+0000 0000 0000 0002
+0000 0000 0000 0003
+0000 0000 0000 0004
+0000 0000 0000 0005
+```
+
 ## Тестирование
 
 Для тестирования проекта используется библиотека `pytest`.
@@ -106,7 +188,8 @@ result = sort_by_date(operations, False)
 
 - `test_masks.py` — тесты функций маскировки номеров карт и счетов;
 - `test_widget.py` — тесты функций модуля `widget`;
-- `test_processing.py` — тесты функций фильтрации и сортировки банковских операций.
+- `test_processing.py` — тесты функций фильтрации и сортировки банковских операций;
+- `test_generators.py` — тесты функций и генераторов модуля `generators`.
 
 В тестах используются фикстуры `pytest` для подготовки тестовых данных и параметризация для проверки функций на различных наборах входных данных.
 
