@@ -327,3 +327,20 @@ poetry run mypy src tests
 ```bash
 poetry run isort --check-only src tests
 ```
+
+## Поддержка CSV и Excel
+
+Проект поддерживает загрузку финансовых транзакций из файлов форматов:
+
+- JSON;
+- CSV;
+- XLSX.
+
+Для чтения CSV- и Excel-файлов используется библиотека `pandas`.
+
+Функции находятся в модуле `src/file_readers.py`:
+
+- `read_transactions_csv` — считывает транзакции из CSV-файла;
+- `read_transactions_excel` — считывает транзакции из Excel-файла.
+
+Обе функции возвращают список словарей с данными о транзакциях.
