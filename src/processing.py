@@ -2,14 +2,29 @@ import re
 from collections import Counter
 from typing import Any
 
-def filter_by_state(operations: list[dict], state: str = 'EXECUTED') -> list[dict]:
+
+def filter_by_state(
+    operations: list[dict[str, Any]],
+    state: str = "EXECUTED",
+) -> list[dict[str, Any]]:
     """Фильтрует список банковских операций по состоянию."""
-    return [operation for operation in operations if operation["state"] == state]
+    return [
+        operation
+        for operation in operations
+        if operation.get("state") == state
+    ]
 
 
-def sort_by_date(operations: list[dict], reverse: bool = True) -> list[dict]:
-    """Сортирует список банковских операций по ключу date"""
-    return sorted(operations, key=lambda operation: operation["date"], reverse=reverse)
+def sort_by_date(
+    operations: list[dict[str, Any]],
+    reverse: bool = True,
+) -> list[dict[str, Any]]:
+    """Сортирует список банковских операций по ключу date."""
+    return sorted(
+        operations,
+        key=lambda operation: operation["date"],
+        reverse=reverse,
+    )
 
 
 def process_bank_search(
