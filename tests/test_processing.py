@@ -1,6 +1,11 @@
 import pytest
 
-from src.processing import filter_by_state, sort_by_date
+from src.processing import (
+    filter_by_state,
+    process_bank_operations,
+    process_bank_search,
+    sort_by_date,
+)
 
 
 @pytest.fixture
@@ -77,3 +82,68 @@ def test_sort_by_date_same_dates(operations: list[dict]) -> None:
     ]
 
     assert same_date_operations == [3, 4]
+
+
+def test_process_bank_search() -> None:
+    """Проверяет поиск транзакций по строке в описании."""
+    transactions = [
+        {"description": "Перевод организации"},
+        {"description": "Открытие вклада"},
+        {"description": "Перевод со счета на счет"},
+    ]
+
+    result = process_bank_search(transactions, "Перевод")
+
+    assert result == [
+        {"description": "Перевод организации"},
+        {"description": "Перевод со счета на счет"},
+    ]
+
+
+def test_process_bank_search_ignore_case() -> None:
+    """Проверяет поиск без учета регистра."""
+    transactions = [
+        {"description": "Перевод организации"},
+        {"description": "Открытие вклада"},
+    ]
+
+    result = process_bank_search(transactions, "пЕрЕвОд")
+
+    assert result == [
+        {"description": "Перевод организации"},
+    ]
+
+
+def test_process_bank_search_no_matches() -> None:
+    """Проверяет поиск при отсутствии совпадений."""
+    transactions = [
+        {"description": "Открытие вклада"},
+    ]
+
+    result = process_bank_search(transactions, "Перевод")
+
+    assert result == []
+
+
+def test_process_bank_operations() -> None:
+    """Проверяет подсчет транзакций по категориям."""
+    transactions = [
+        {"description": "Перевод организации"},
+        {"description": "Открытие вклада"},
+        {"description": "Перевод организации"},
+        {"description": "Перевод со счета на счет"},
+    ]
+
+    categories = [
+        "Перевод организации",
+        "Открытие вклада",
+        "Оплата",
+    ]
+
+    result = process_bank_operations(transactions, categories)
+
+    assert result == {
+        "Перевод организации": 2,
+        "Открытие вклада": 1,
+        "Оплата": 0,
+    }
